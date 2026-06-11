@@ -6,11 +6,36 @@ import os
 # import keyboard
 
 
+# RobotCommunication
+try:
+    from modules.robot.robot_control import RobotCommunication
+    print("RobotCommunication import 성공")
+except Exception as e:
+    print(f"RobotCommunication import 실패: {e}")
 
-from modules.robot.robot_control import RobotCommunication
-from modules.system.sysem_manager import SystemManager
-from modules.system.system_fsm.context import SystemContext
-from modules.system.system_fsm.fsm import SystemFsmSequence
+
+# SystemManager
+try:
+    from modules.system.sysem_manager import SystemManager
+    print("SystemManager import 성공")
+except Exception as e:
+    print(f"SystemManager import 실패: {e}")
+
+
+# SystemContext
+try:
+    from modules.system.system_fsm.context import SystemContext
+    print("SystemContext import 성공")
+except Exception as e:
+    print(f"SystemContext import 실패: {e}")
+
+
+# SystemFsmSequence
+try:
+    from modules.system.system_fsm.fsm import SystemFsmSequence
+    print("SystemFsmSequence import 성공")
+except Exception as e:
+    print(f"SystemFsmSequence import 실패: {e}")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PYTHON_MIDDLEWARE_PATH = os.path.join(BASE_DIR, "PythonMiddleware")
