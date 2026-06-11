@@ -517,6 +517,22 @@ class RobotCommunication:
             return ControlMode.FIXED_PLANE
         return ControlMode.NONE
 
+    def _fixed_constraint_control_requested(self, fixed_mode):
+        if fixed_mode == ControlMode.NONE:
+            return False
+        return (
+            self._enum_value(bb.get("control/mode")) == self._enum_value(fixed_mode)
+            and self._enum_value(bb.get("fixed_constraint_teleop/active_mode")) == self._enum_value(fixed_mode)
+        )
+
+    def _fixed_constraint_requires_cockpit(self, fsm_state):
+        fsm_value = self._enum_value(fsm_state)
+        return fsm_value in (
+            self._enum_value(SystemFsmState.FIXED_POINT_CONTROL),
+            self._enum_value(SystemFsmState.FIXED_LINE_CONTROL),
+            self._enum_value(SystemFsmState.FIXED_PLANE_CONTROL),
+        )
+
     @staticmethod
     def _enum_name(enum_cls, value):
         if hasattr(value, "name") and hasattr(value, "value"):
@@ -688,6 +704,22 @@ class RobotCommunication:
             "integration_dt_sec": fixed_snapshot.get("integration_dt", ""),
             "rate_limit_mode": fixed_snapshot.get("rate_limit_mode", ""),
             "task_input_source": fixed_snapshot.get("task_input_source", ""),
+            "tau_filter_enabled": fixed_snapshot.get("tau_filter_enabled", ""),
+            "tau_filter_time_constant_sec": fixed_snapshot.get("tau_filter_time_constant_sec", ""),
+            "tau_filter_alpha": fixed_snapshot.get("tau_filter_alpha", ""),
+            "line_input_stabilizer_enabled": fixed_snapshot.get("line_input_stabilizer_enabled", ""),
+            "line_input_stabilizer_method": fixed_snapshot.get("line_input_stabilizer_method", ""),
+            "line_input_stabilizer_alpha": fixed_snapshot.get("line_input_stabilizer_alpha", ""),
+            "line_input_stabilizer_time_constant_sec": fixed_snapshot.get(
+                "line_input_stabilizer_time_constant_sec",
+                "",
+            ),
+            "line_input_stabilizer_slew_rate_limit": fixed_snapshot.get(
+                "line_input_stabilizer_slew_rate_limit",
+                "",
+            ),
+            "line_input_velocity": fixed_snapshot.get("line_input_velocity", ""),
+            "line_filtered_velocity": fixed_snapshot.get("line_filtered_velocity", ""),
             "singularity_sigma_min": singularity.get("sigma_min", ""),
             "singularity_condition_number": singularity.get("condition_number", ""),
             "singularity_speed_scale": singularity.get("speed_scale", ""),
@@ -699,7 +731,10 @@ class RobotCommunication:
             "tau_ext": self._state_vec(control_state, "tau_ext") or bb.get("robot/state/tau_ext"),
             "tau_bias": fixed_snapshot.get("tau_bias"),
             "tau_deadzone": fixed_snapshot.get("tau_deadzone"),
+            "tau_slew_rate_limit": fixed_snapshot.get("tau_slew_rate_limit"),
             "task_gain": fixed_snapshot.get("task_gain"),
+            "tau_debiased": fixed_snapshot.get("tau_debiased"),
+            "tau_filtered": fixed_snapshot.get("tau_filtered"),
             "tau_processed": fixed_snapshot.get("tau_processed"),
             "task_wrench": fixed_snapshot.get("task_wrench"),
             "raw_velocity": fixed_snapshot.get("raw_velocity"),
@@ -1054,6 +1089,34 @@ class RobotCommunication:
                     control_state=self.latest_control_state,
                     fixed_snapshot=self.fixed_constraint_teleop.snapshot(),
                 )
+            self._publish_fixed_teleop_snapshot()
+            return
+
+        if not self._fixed_constraint_control_requested(fixed_mode):
+            if self.fixed_constraint_teleop.active:
+                self.fixed_constraint_teleop.exit_mode()
+            self._log_control_trace(
+                record_type="fixed_skip",
+                source="control_cockpit_tele",
+                loop_dt=loop_dt,
+                skip_reason="fixed_not_requested",
+                control_state=self.latest_control_state,
+                fixed_snapshot=self.fixed_constraint_teleop.snapshot(),
+            )
+            self._publish_fixed_teleop_snapshot()
+            return
+
+        if self._fixed_constraint_requires_cockpit(fsm_state) and bb.get("cockpit/pressed") != True:
+            if self.fixed_constraint_teleop.active:
+                self.fixed_constraint_teleop.exit_mode()
+            self._log_control_trace(
+                record_type="fixed_skip",
+                source="control_cockpit_tele",
+                loop_dt=loop_dt,
+                skip_reason="cockpit_released",
+                control_state=self.latest_control_state,
+                fixed_snapshot=self.fixed_constraint_teleop.snapshot(),
+            )
             self._publish_fixed_teleop_snapshot()
             return
 

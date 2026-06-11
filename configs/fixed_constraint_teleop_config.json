@@ -7,7 +7,7 @@
       "filter_time_constant_sec": 0.04
     },
     "fixed_line": {
-      "gain": 1.0,
+      "gain": 3.0,
       "velocity_limit_mm_s": 55.0,
       "cumulative_limit_mm": 70.0,
       "filter_time_constant_sec": 0.035
@@ -21,6 +21,18 @@
   },
   "filter": {
     "reset_on_sign_change": true
+  },
+  "tau_filter": {
+    "enabled": true,
+    "time_constant_sec": 0.15,
+    "slew_rate_limit_nm_s": [
+      30.0,
+      30.0,
+      30.0,
+      15.0,
+      15.0,
+      15.0
+    ]
   },
   "min_command": 1e-06,
   "jacobian_rcond": 0.0001,
@@ -194,7 +206,16 @@
           0.30734449954312976,
           0.15367224977156488,
           0.9391081930484522
-        ]
+        ],
+        "input_stabilizer": {
+          "enabled": true,
+          "method": "moving_average",
+          "time_constant_sec": 0.12,
+          "moving_average_window": 10,
+          "slew_rate_limit_mm_s2": 300.0,
+          "deadband_mm_s": 0.5,
+          "reset_on_sign_change": true
+        }
       }
     },
     "fixed_plane": {

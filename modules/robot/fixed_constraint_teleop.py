@@ -32,6 +32,8 @@ class FixedConstraintTeleopController:
         self.mode_name = "inactive"
         self.cumulative_command = [0.0] * 6
         self._reset_trace_fields()
+        self._reset_tau_filter_state()
+        self._reset_line_stabilizer_state()
 
         self._apply_config_vectors()
         self.tool_pos = [0.0] * 6
@@ -52,6 +54,8 @@ class FixedConstraintTeleopController:
         self.mode_name = self.MODE_NAMES[mode]
         self.reset_command()
         self._reset_trace_fields()
+        self._reset_tau_filter_state()
+        self._reset_line_stabilizer_state()
         self.last_reason = "enter_mode"
 
         self.active = True
@@ -62,6 +66,8 @@ class FixedConstraintTeleopController:
         self.mode_name = "inactive"
         self.reset_command()
         self._reset_trace_fields()
+        self._reset_tau_filter_state()
+        self._reset_line_stabilizer_state()
         self.last_reason = "exit_mode"
 
     def reset_command(self) -> None:
@@ -171,7 +177,7 @@ class FixedConstraintTeleopController:
         self.last_task_wrench = [0.0] * 6
         self.last_raw_delta = [0.0] * 6
         self.last_raw_velocity = [0.0] * 6
-        tau_ext = self._processed_tau_ext(control_state)
+        tau_ext = self._processed_tau_ext(control_state, loop_dt)
         self.last_tau_processed = list(tau_ext)
         if not self._finite_values(tau_ext):
             self.last_reason = "non_finite_tau_ext"
@@ -196,13 +202,13 @@ class FixedConstraintTeleopController:
         self.last_task_wrench = list(task_wrench)
         gains = self._task_gain()
         signs = self._config_vec("task_wrench_sign", 6)
-        velocity = self._task_wrench_to_velocity(task_wrench, tau_ext, jacobian, gains, signs)
+        velocity = self._task_wrench_to_velocity(task_wrench, tau_ext, jacobian, gains, signs, loop_dt)
         delta = [velocity[index] * loop_dt for index in range(6)]
         self.last_raw_velocity = list(velocity)
         self.last_raw_delta = list(delta)
         return delta
 
-    def _processed_tau_ext(self, control_state: Dict[str, Any]) -> List[float]:
+    def _processed_tau_ext(self, control_state: Dict[str, Any], loop_dt: float) -> List[float]:
         tau_ext = self._vec(control_state.get("tau_ext"), 6)
         tau_bias = self._config_vec("tau_bias", 6)
         tau_deadzone = self._config_vec("tau_deadzone", 6)
@@ -213,7 +219,10 @@ class FixedConstraintTeleopController:
             if abs(value) < tau_deadzone[index]:
                 value = 0.0
             processed.append(value)
-        return processed
+        self.last_tau_debiased = list(processed)
+        filtered = self._filter_tau_processed(processed, loop_dt)
+        self.last_tau_filtered = list(filtered)
+        return filtered
 
     def snapshot(self) -> Dict[str, Any]:
         mode_config = self._mode_config()
@@ -245,7 +254,20 @@ class FixedConstraintTeleopController:
             "tau_ext": list(self.last_tau_ext),
             "tau_bias": self._config_vec("tau_bias", 6),
             "tau_deadzone": self._config_vec("tau_deadzone", 6),
+            "tau_filter_enabled": self.last_tau_filter_enabled,
+            "tau_filter_time_constant_sec": self.last_tau_filter_time_constant,
+            "tau_filter_alpha": self.last_tau_filter_alpha,
+            "tau_slew_rate_limit": list(self.last_tau_slew_rate_limit),
+            "tau_debiased": list(self.last_tau_debiased),
+            "tau_filtered": list(self.last_tau_filtered),
             "tau_processed": list(self.last_tau_processed),
+            "line_input_stabilizer_enabled": self.last_line_input_stabilizer_enabled,
+            "line_input_stabilizer_method": self.last_line_input_stabilizer_method,
+            "line_input_stabilizer_alpha": self.last_line_input_stabilizer_alpha,
+            "line_input_stabilizer_time_constant_sec": self.last_line_input_stabilizer_time_constant,
+            "line_input_stabilizer_slew_rate_limit": self.last_line_input_stabilizer_slew_rate_limit,
+            "line_input_velocity": self.last_line_input_velocity,
+            "line_filtered_velocity": self.last_line_filtered_velocity,
             "task_wrench": list(self.last_task_wrench),
             "task_gain": self._task_gain(),
             "task_input_source": self._task_input_source(),
@@ -300,7 +322,20 @@ class FixedConstraintTeleopController:
     def _reset_trace_fields(self) -> None:
         self.last_reason = ""
         self.last_tau_ext = [0.0] * 6
+        self.last_tau_debiased = [0.0] * 6
+        self.last_tau_filtered = [0.0] * 6
         self.last_tau_processed = [0.0] * 6
+        self.last_tau_filter_enabled = False
+        self.last_tau_filter_time_constant = 0.0
+        self.last_tau_filter_alpha = 1.0
+        self.last_tau_slew_rate_limit = [0.0] * 6
+        self.last_line_input_stabilizer_enabled = False
+        self.last_line_input_stabilizer_method = "disabled"
+        self.last_line_input_stabilizer_alpha = 1.0
+        self.last_line_input_stabilizer_time_constant = 0.0
+        self.last_line_input_stabilizer_slew_rate_limit = 0.0
+        self.last_line_input_velocity = 0.0
+        self.last_line_filtered_velocity = 0.0
         self.last_task_wrench = [0.0] * 6
         self.last_integration_dt = 0.0
         self.last_raw_velocity = [0.0] * 6
@@ -332,6 +367,15 @@ class FixedConstraintTeleopController:
         self.last_pose_source = ""
         self.last_constraint_frame = ""
         self._has_last_constraint_error = False
+
+    def _reset_tau_filter_state(self) -> None:
+        self._tau_filter_initialized = False
+        self._tau_filter_state = [0.0] * 6
+
+    def _reset_line_stabilizer_state(self) -> None:
+        self._line_input_stabilizer_initialized = False
+        self._line_input_stabilizer_state = 0.0
+        self._line_input_stabilizer_samples: List[float] = []
 
     def _q_rad_from_state(self, control_state: Dict[str, Any]) -> Optional[np.ndarray]:
         if "q" not in control_state:
@@ -874,6 +918,7 @@ class FixedConstraintTeleopController:
         jacobian: np.ndarray,
         gains: List[float],
         signs: List[float],
+        loop_dt: float,
     ) -> List[float]:
         mode_config = self._mode_config()
         rotation_input = self._rotation_input_config(mode_config)
@@ -938,12 +983,105 @@ class FixedConstraintTeleopController:
                     self._mode_key("force_to_line.gain"),
                 )
                 line_velocity = line_gain * self._dot3(task_wrench[0:3], force_direction)
+                line_velocity = self._stabilized_line_velocity(line_velocity, loop_dt)
                 velocity = [0.0] * 6
                 for index in range(3):
                     velocity[index] = axis[index] * line_velocity * signs[index]
                 return velocity
 
         return [task_wrench[index] * gains[index] * signs[index] for index in range(6)]
+
+    def _stabilized_line_velocity(self, line_velocity: float, loop_dt: float) -> float:
+        force_to_line = self._mode_config().get("force_to_line", {})
+        stabilizer = {}
+        if isinstance(force_to_line, dict):
+            raw_stabilizer = force_to_line.get("input_stabilizer", {})
+            if isinstance(raw_stabilizer, dict):
+                stabilizer = raw_stabilizer
+
+        enabled = bool(stabilizer.get("enabled", False))
+        method = str(stabilizer.get("method", "lpf")).strip().lower()
+        time_constant = max(0.0, self._optional_float(stabilizer.get("time_constant_sec"), 0.0))
+        slew_rate_limit = max(0.0, self._optional_float(stabilizer.get("slew_rate_limit_mm_s2"), 0.0))
+        deadband = max(0.0, self._optional_float(stabilizer.get("deadband_mm_s"), 0.0))
+
+        value = float(line_velocity)
+        self.last_line_input_velocity = value
+        if abs(value) < deadband:
+            value = 0.0
+
+        self.last_line_input_stabilizer_enabled = enabled
+        self.last_line_input_stabilizer_method = method if enabled else "disabled"
+        self.last_line_input_stabilizer_time_constant = time_constant
+        self.last_line_input_stabilizer_slew_rate_limit = slew_rate_limit
+        self.last_line_input_stabilizer_alpha = 1.0
+
+        if not enabled:
+            self._line_input_stabilizer_initialized = True
+            self._line_input_stabilizer_state = value
+            self._line_input_stabilizer_samples = [value]
+            self.last_line_filtered_velocity = value
+            return value
+
+        if not getattr(self, "_line_input_stabilizer_initialized", False):
+            self._line_input_stabilizer_initialized = True
+            self._line_input_stabilizer_state = 0.0
+            self._line_input_stabilizer_samples = []
+
+        previous = float(self._line_input_stabilizer_state)
+        if bool(stabilizer.get("reset_on_sign_change", False)) and value * previous < 0.0:
+            filter_previous = 0.0
+            self._line_input_stabilizer_samples = []
+        else:
+            filter_previous = previous
+
+        if method in ("moving_average", "moving-average", "ma", "average"):
+            target = self._line_velocity_moving_average(value, stabilizer)
+        else:
+            target = self._line_velocity_lpf(value, filter_previous, time_constant, loop_dt)
+
+        filtered = self._apply_scalar_slew_limit(target, previous, slew_rate_limit, loop_dt)
+        self._line_input_stabilizer_state = filtered
+        self.last_line_filtered_velocity = filtered
+        return filtered
+
+    def _line_velocity_lpf(
+        self,
+        value: float,
+        previous: float,
+        time_constant: float,
+        loop_dt: float,
+    ) -> float:
+        if time_constant <= 0.0:
+            self.last_line_input_stabilizer_alpha = 1.0
+            return value
+        alpha = self._clamp(loop_dt / (time_constant + loop_dt), 0.0, 1.0)
+        self.last_line_input_stabilizer_alpha = alpha
+        return previous + alpha * (value - previous)
+
+    def _line_velocity_moving_average(self, value: float, stabilizer: Dict[str, Any]) -> float:
+        window = max(1, int(self._optional_float(stabilizer.get("moving_average_window"), 5.0)))
+        samples = list(getattr(self, "_line_input_stabilizer_samples", []))
+        if not samples:
+            samples = [0.0] * max(0, window - 1)
+        samples.append(value)
+        samples = samples[-window:]
+        self._line_input_stabilizer_samples = samples
+        self.last_line_input_stabilizer_alpha = 1.0 / float(window)
+        return sum(samples) / float(len(samples))
+
+    def _apply_scalar_slew_limit(
+        self,
+        target: float,
+        previous: float,
+        slew_rate_limit: float,
+        loop_dt: float,
+    ) -> float:
+        if slew_rate_limit <= 0.0 or loop_dt <= 0.0:
+            return float(target)
+        max_delta = slew_rate_limit * loop_dt
+        delta = self._clamp(float(target) - float(previous), -max_delta, max_delta)
+        return float(previous) + delta
 
     def _task_input_source(self) -> str:
         mode_config = self._mode_config()
@@ -1033,6 +1171,95 @@ class FixedConstraintTeleopController:
         if loop_dt <= 0.0:
             return [0.0] * 6
         return [float(value) / loop_dt for value in delta[:6]]
+
+    def _filter_tau_processed(self, tau_values: List[float], loop_dt: float) -> List[float]:
+        values = list(tau_values[:6])
+        enabled = self._tau_filter_enabled()
+        time_constant = self._tau_filter_time_constant()
+        slew_rate_limit = self._tau_slew_rate_limit()
+
+        self.last_tau_filter_enabled = enabled
+        self.last_tau_filter_time_constant = time_constant
+        self.last_tau_slew_rate_limit = list(slew_rate_limit)
+
+        if not enabled:
+            self.last_tau_filter_alpha = 1.0
+            self._tau_filter_initialized = True
+            self._tau_filter_state = list(values)
+            return values
+
+        if not getattr(self, "_tau_filter_initialized", False):
+            self._tau_filter_initialized = True
+            self._tau_filter_state = [0.0] * 6
+
+        previous = list(self._tau_filter_state[:6])
+        if time_constant <= 0.0:
+            alpha = 1.0
+            target = list(values)
+        else:
+            alpha = self._clamp(loop_dt / (time_constant + loop_dt), 0.0, 1.0)
+            target = [
+                previous[index] + alpha * (values[index] - previous[index])
+                for index in range(6)
+            ]
+
+        filtered = self._apply_tau_slew_limit(target, previous, slew_rate_limit, loop_dt)
+        self.last_tau_filter_alpha = alpha
+        self._tau_filter_state = list(filtered)
+        return filtered
+
+    def _apply_tau_slew_limit(
+        self,
+        target: List[float],
+        previous: List[float],
+        slew_rate_limit: List[float],
+        loop_dt: float,
+    ) -> List[float]:
+        if all(float(limit) <= 0.0 for limit in slew_rate_limit):
+            return list(target[:6])
+
+        output = []
+        for index in range(6):
+            limit = float(slew_rate_limit[index])
+            if limit <= 0.0:
+                output.append(float(target[index]))
+                continue
+            max_delta = limit * loop_dt
+            delta = self._clamp(
+                float(target[index]) - float(previous[index]),
+                -max_delta,
+                max_delta,
+            )
+            output.append(float(previous[index]) + delta)
+        return output
+
+    def _tau_filter_enabled(self) -> bool:
+        filter_config = self.config.get("tau_filter", {})
+        if not isinstance(filter_config, dict):
+            return False
+        return bool(filter_config.get("enabled", False))
+
+    def _tau_filter_time_constant(self) -> float:
+        filter_config = self.config.get("tau_filter", {})
+        if not isinstance(filter_config, dict):
+            return 0.0
+        return max(0.0, self._optional_float(filter_config.get("time_constant_sec"), 0.0))
+
+    def _tau_slew_rate_limit(self) -> List[float]:
+        filter_config = self.config.get("tau_filter", {})
+        if not isinstance(filter_config, dict):
+            return [0.0] * 6
+        raw = filter_config.get(
+            "slew_rate_limit_nm_s",
+            filter_config.get("slew_rate_limit", 0.0),
+        )
+        if isinstance(raw, (list, tuple)):
+            return [
+                max(0.0, value)
+                for value in self._required_vec(raw, 6, "tau_filter.slew_rate_limit_nm_s")
+            ]
+        limit = max(0.0, self._optional_float(raw, 0.0))
+        return [limit] * 6
 
     def _filtered_velocity(self, velocity: List[float], loop_dt: float) -> List[float]:
         time_constant = self._velocity_filter_time_constant()
@@ -1520,4 +1747,3 @@ class FixedConstraintTeleopController:
         if not math.isfinite(norm) or norm <= limit or norm <= 1e-12:
             return vector
         return vector * (limit / norm)
-
