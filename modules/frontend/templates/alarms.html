@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="status-page">
+    <div class="status-overview">
+        <article class="card status-errors full-log">
+            <header>
+                <h2>전체 알림 및 에러 기록</h2>
+                <p class="hint">최근 순으로 모든 알림과 에러를 확인합니다.</p>
+            </header>
+            <div class="error-table-wrapper">
+                <table class="error-table" role="grid">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="column-time">시간</th>
+                            <th scope="col" class="column-type">종류</th>
+                            <th scope="col" class="column-content">내용</th>
+                            <th scope="col" class="column-action">조치</th>
+                        </tr>
+                    </thead>
+                    <tbody data-alarm-log="system.alarms">
+                        <tr>
+                            <td colspan="4" class="placeholder">이벤트를 불러오는 중…</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

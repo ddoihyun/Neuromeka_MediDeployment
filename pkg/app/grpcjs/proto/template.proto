@@ -1,0 +1,41 @@
+syntax = "proto3";
+package GRPCGlobalVariable; //
+
+
+service GRPCGlobalVariableTask {
+    // Global variables
+    rpc SetInt(GInt) returns (Empty) {}
+    rpc GetInt(IntVal) returns (IntVal) {}
+
+    rpc SetInts(GInts) returns (Empty) {}
+    rpc GetInts(GInt) returns (IntVals) {}
+
+
+}
+
+
+message Empty {
+}
+
+
+
+// Global variables
+message GInt {
+    int32 idx = 1;
+    int32 val = 2;
+}
+
+// Common use
+message IntVal {
+    int32 val = 1;
+}
+
+message GInts {
+    int32 idx = 1;
+    repeated int32 val = 2;
+}
+
+message IntVals {
+    repeated int32 val = 1;
+}
+

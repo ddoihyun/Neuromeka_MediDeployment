@@ -1,0 +1,23 @@
+[Unit]
+Description= FSM Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# User는 설치 스크립트를 실행하는 사용자로 자동 설정됩니다.
+User=user
+
+WorkingDirectory=/home/user/dev/Release/MediDeployment
+# Optional override file (example): FSM_PYTHON_BIN=/home/user/dev/Release/MediDeployment/.venv/bin/python
+EnvironmentFile=-/etc/default/fsm
+ExecStart=/bin/bash /home/user/dev/Release/MediDeployment/Service/run_fsm_wrapper.sh
+
+Restart=always
+RestartSec=5s
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

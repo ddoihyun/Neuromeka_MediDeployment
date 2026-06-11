@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+{% set voice_state = app_state.voice_control %}
+<section class="card manual-card voice-card">
+    <h2>음성 제어</h2>
+    <div class="voice-control-layout">
+        <div class="manual-column manual-motion voice-command-panel">
+            <div class="voice-device-control" data-voice-device-control>
+                <label class="voice-device-label" for="voice-device-select">마이크</label>
+                <div class="voice-device-row">
+                    <select id="voice-device-select" data-voice-device-select>
+                        <option value="">마이크 목록 불러오는 중...</option>
+                    </select>
+                    <button class="btn outline voice-device-apply" type="button" data-voice-device-apply>적용</button>
+                </div>
+                <p class="hold-hint">
+                    현재 마이크:
+                    <span data-state-text="voice_control.selected_device_name">
+                        {{ voice_state.selected_device_name if voice_state and voice_state.selected_device_name else '기본 입력 장치' }}
+                    </span>
+                </p>
+                <p class="hold-hint voice-device-status" data-voice-device-status></p>
+            </div>
+
+            <div class="manual-controls manual-hold-controls">
+                <div class="voice-action-row">
+                    <button
+                        class="btn hold-trigger"
+                        type="button"
+                        data-hold-button
+                        data-hold-kind="voice_control"
+                        data-hold-activate="voice_control.is_listening"
+                        data-hold-deactivate="voice_control.is_listening"
+                        data-hold-touch="voice_control.last_started_at"
+                    >음성교시 시작</button>
+                    <button
+                        class="btn danger voice-stop-button"
+                        type="button"
+                        data-voice-cancel
+                        hidden
+                    >정지</button>
+                </div>
+                <p class="hold-hint" data-state-text="voice_control.status_text">
+                    {{ voice_state.status_text if voice_state and voice_state.status_text else '버튼을 누르면 음성을 녹음합니다.' }}
+                </p>
+            </div>
+        </div>
+
+        <div class="voice-result-panel" aria-live="polite">
+            <div class="voice-result-header">
+                <h3>음성교시 결과</h3>
+                <span class="voice-stage-badge" data-voice-stage-badge>대기</span>
+            </div>
+            <div class="voice-progress-steps" data-voice-progress-steps>
+                <span class="voice-progress-step" data-voice-step="recording">녹음</span>
+                <span class="voice-progress-step" data-voice-step="stt">STT</span>
+                <span class="voice-progress-step" data-voice-step="parse">해석</span>
+                <span class="voice-progress-step" data-voice-step="done">완료</span>
+            </div>
+            <dl class="voice-result-summary" data-voice-result-summary>
+                <div class="voice-result-row">
+                    <dt>STT</dt>
+                    <dd data-voice-result-field="stt">대기 중</dd>
+                </div>
+                <div class="voice-result-row">
+                    <dt>명령</dt>
+                    <dd data-voice-result-field="command">-</dd>
+                </div>
+                <div class="voice-result-row">
+                    <dt>이동</dt>
+                    <dd data-voice-result-field="vector">-</dd>
+                </div>
+                <div class="voice-result-row">
+                    <dt>응답</dt>
+                    <dd data-voice-result-field="reply">-</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</section>
+{% endblock %}

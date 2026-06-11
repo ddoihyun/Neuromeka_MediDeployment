@@ -1,0 +1,138 @@
+{
+  "Program": [
+    {
+      "cmd"     : "CollisionConfig",
+      "policy"  : "PAUSE_DURATION",
+      "duration": 3.5
+    },
+    {
+      "cmd"        : "VariableConfig",
+      "local_list" : [
+        ["INT", "iVar1", 101],
+        ["INT", "iVar2", 102],
+        ["FLOAT", "fVar1", 1],
+        ["FLOAT", "fVar2", 2],
+        ["FLOAT", "fVar3", 3],
+        ["BOOL", "bVar", 50],
+        ["JPOS", "jVar", 250],
+        ["TPOS", "tVar", 370],
+        ["INT", "iVar2", 101]
+      ],
+      "modbus_list": [
+        {
+          "server_name"  : "extern_local",
+          "server_ip"    : "192.168.1.5",
+          "server_port"  : 502,
+          "variable_list": [
+            ["READ_COIL", "home", 1017],
+            ["READ_REGISTER", "zero", 1018],
+            ["WRITE_COIL", "m_home", 1164],
+            ["WRITE_REGISTER", "m_zero", 1165],
+            ["READ_REGISTER", "joint3", 1303],
+            ["READ_REGISTER", "joint4", 1304],
+            ["READ_REGISTER", "joint5", 1305]
+          ]
+        }
+      ]
+    },
+    {
+      "cmd"       : "SetVar",
+      "active"    : true,
+      "expression": "iVar1 := 2; fVar1 := 6.0; fVar3 := iVar1 + fVar1;"
+    },
+    {
+      "cmd"       : "SetVar",
+      "active"    : true,
+      "expression": [
+        "iVar2 := 4",
+        "fVar2 := 10.0",
+        "bVar := true",
+        "var temp[6] := {1,2,3,4,5,6}; jVar := temp;"
+      ]
+    },
+    {
+      "cmd"              : "MoveJ",
+      "name"             : "move_home",
+      "wait_finish"      : false,
+      "base_type"        : "ABSOLUTE",
+      "interpolator_type": "VELOCITY",
+      "vel_ratio"        : 25,
+      "acc_ratio"        : 100,
+      "coll_sens_level"  : 3,
+      "blending"         : {
+        "type"     : "NONE",
+        "condition": {
+          "type"    : "RADIUS",
+          "radius"  : 10.0,
+          "time"    : 10.0,
+          "progress": 10.0
+        }
+      },
+      "waypoint_time"    : [
+        2.00
+      ],
+      "waypoint_active"  : [
+        true
+      ],
+      "waypoints"        : [
+        [0.0, 0.0, -90.0, 0.0, -90.0, 0.0]
+      ],
+      "active"           : true,
+      "fold"             : false
+    },
+    {
+      "cmd"     : "Sleep",
+      "duration": 2.0,
+      "active"  : true
+    },
+    {
+      "cmd"    : "SetSpeedRatio",
+      "percent": 100,
+      "active" : true
+    },
+    {
+      "cmd"      : "SetFrame",
+      "ref_frame": [0.0, 0.0, 0.0, 0.0, 0.0, 90.0],
+      "tcp_frame": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      "active"   : true,
+      "children" : [
+        {
+          "cmd"              : "MoveL",
+          "name"             : "move_line",
+          "vel_ratio"        : 25,
+          "acc_ratio"        : 100,
+          "interpolator_type": "VELOCITY",
+          "base_type"        : "RELATIVE",
+          "wait_finish"      : true,
+          "coll_sens_level"  : 3,
+          "blending"         : {
+            "type"     : "OVERRIDE",
+            "condition": {
+              "type"      : "RADIUS",
+              "radius"    : 10.0,
+              "time"      : 10.0,
+              "progress"  : 10.0,
+              "expression": ""
+            }
+          },
+          "waypoint_time"    : [
+            2.00
+          ],
+          "waypoint_active"  : [
+            true
+          ],
+          "waypoints"        : [
+            [100.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+          ],
+          "waypoints_joint"  : [
+            [
+              0.00, -8.51, -117.40, 0.00, -54.09, 0.00
+            ]
+          ],
+          "active"           : true,
+          "fold"             : false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+{% set mode_state = app_state.mode_control %}
+<section class="card manual-card mode-control-card">
+    <h2>모드 제어</h2>
+    <p class="manual-column-description">2초 이상 길게 누르면 모드 명령이 전송됩니다.</p>
+    <div class="mode-grid" role="group" aria-label="Mode control actions">
+        {% set modes = [
+            {"id": "release", "label": "RELEASE"},
+            {"id": "fixed_point", "label": "FIXED POINT"},
+            {"id": "fixed_line", "label": "FIXED LINE"},
+            {"id": "fixed_plane", "label": "FIXED PLANE"},
+            {"id": "update_jts", "label": "UPDATE JTS"},
+        ] %}
+        {% for mode in modes %}
+        <button
+            class="btn hold-trigger mode-control-btn mode-control-btn--{{ mode.id }}"
+            type="button"
+            data-mode-action
+            data-mode-id="{{ mode.id }}"
+            data-mode-label="{{ mode.label }}"
+            data-hold-duration="2000"
+            data-state-mode="mode_control.active_mode"
+            data-mode-value="{{ mode.id }}"
+        >{{ mode.label }}</button>
+        {% endfor %}
+    </div>
+    <p class="hold-hint">현재 모드: <span data-state-text="mode_control.current_mode">{{ mode_state.current_mode if mode_state and mode_state.current_mode else '대기 중' }}</span></p>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{
+  "AddFile":["indyDeploy.json", "indyConfig.json"],
+  "OverwriteFile":[],
+  "DeleteKey":{
+    "SafetyConfig.json":["reducedSpeedRatio"]
+  },
+  "AddKey":{
+    "indyDeploy.json":[
+      "IndySimulationTask","OnRobotTCPTask", "LinearControlTask", "SystemLoggingTask"
+    ]
+  },
+  "OverwriteKey":{
+    "indyDeploy.json":[
+      "IndySafetyCommTask"
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "Name"   : "test_pp",
+  "Program": [
+    {
+      "cmd"     : "CollisionConfig",
+      "policy"  : "IGNORE",
+      "duration": 0
+    },
+    {
+      "cmd"       : "VariableConfig",
+      "local_list": []
+    },
+    {
+      "cmd"              : "MoveJ",
+      "name"             : "move_home",
+      "wait_finish"      : false,
+      "base_type"        : "ABSOLUTE",
+      "interpolator_type": "VELOCITY",
+      "vel_ratio"        : 25,
+      "acc_ratio"        : 100,
+      "coll_sens_level"  : 3,
+      "blending"         : {
+        "type"     : "NONE",
+        "condition": {
+          "type"    : "RADIUS",
+          "radius"  : 10.0,
+          "time"    : 10.0,
+          "progress": 10.0
+        }
+      },
+      "waypoint_time"    : [
+        2.00
+      ],
+      "waypoint_active"  : [
+        true
+      ],
+      "waypoints"        : [
+        [0.0, 0.0, -90.0, 0.0, -90.0, 0.0]
+      ],
+      "offsets"          : [
+        [10.0, 0.0, 0.0, 0.0, 20.0, 0.0]
+      ],
+      "shift"            : [10.0, 0.0, 0.0, 0.0, 20.0, 0.0],
+      "active"           : true,
+      "fold"             : false
+    }
+  ]
+}

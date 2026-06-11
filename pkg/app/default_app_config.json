@@ -1,0 +1,35 @@
+{
+  "server": {
+    "address": "127.0.0.1",
+    "server_type": "grpc",
+    "modbus_port": "502",
+    "grpc_port": "503"
+  },
+
+
+  "protocol": {
+    "read": {
+      "ranges": [[50, 250]],
+      "forwarding": {
+
+      }
+    },
+    "write": {
+      "ranges": [[0, 69]],
+      "forwarding": {
+
+      }
+    },
+    "read_reset": {
+      "forwarding": {
+
+      }
+    },
+    "delayed_resets": [
+      {
+        "delay_seconds": 5,
+        "indices": [101, 102]
+      }
+    ]
+  }
+}

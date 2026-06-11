@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card power-control" data-cb-control-sync>
+    <h2>전원 제어</h2>
+    <div class="button-row">
+        <button
+            class="btn primary"
+            type="button"
+            data-state-trigger-hold="cb_control.reboot"
+            >리부트</button>
+        <button
+            class="btn danger"
+            type="button"
+            data-state-trigger-hold="cb_control.shutdown"
+            >종료하기</button>
+    </div>
+    <div class="request-status">
+        <p>전원 요청 상태: <span data-state-text="cb_control.power_request">대기 중</span></p>
+    </div>
+</section>
+{% endblock %}

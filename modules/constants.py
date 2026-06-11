@@ -1,0 +1,151 @@
+from pkg.fsm.base import *
+from datetime import datetime
+from enum import IntEnum
+
+ROBOT_CONNECTION_RETRY_INTERVAL_SEC = 1.0
+ROBOT_CONNECTION_LOG_INTERVAL_SEC = 5.0
+
+
+class SystemFsmState(OpState):
+    # INACTIVE = INACTIVE_STATE
+    NONE = 0
+    NOT_READY = 1
+    IDLE = 2
+
+    ERROR = 3
+    RECOVER = 4
+
+    VOICE_CONTROL = 5
+    JOYSTICK_CONTROL = 6
+    BUTTON_CONTROL = 7
+    UPDATE_GAIN = 8
+    MANUAL_CONTROL = 9
+
+    DIRECT_TEACHING = 10
+
+    PREP = 11
+
+    DEBUG_MOTION = 12
+    FIXED_POINT_CONTROL = 13
+    FIXED_LINE_CONTROL = 14
+    FIXED_PLANE_CONTROL = 15
+    VOICE_DIRECT_TEACHING = 16
+    VOICE_FIXED_POINT_CONTROL = 17
+    VOICE_FIXED_LINE_CONTROL = 18
+    VOICE_FIXED_PLANE_CONTROL = 19
+
+
+
+class SystemFsmEvent(OpEvent):
+    NONE = 0
+
+    NOT_READY = 1
+    IDLE = 2
+
+    ERROR = 3
+    RECOVER = 4
+
+    VOICE_CONTROL = 5
+    JOYSTICK_CONTROL = 6
+    BUTTON_CONTROL = 7
+
+    UPDATE_GAIN = 8
+
+    MANUAL_CONTROL = 9
+
+    DIRECT_TEACHING = 10
+
+    PREP = 11
+
+    DEBUG_MOTION = 12
+    FIXED_POINT_CONTROL = 13
+    FIXED_LINE_CONTROL = 14
+    FIXED_PLANE_CONTROL = 15
+    VOICE_DIRECT_TEACHING = 16
+    VOICE_FIXED_POINT_CONTROL = 17
+    VOICE_FIXED_LINE_CONTROL = 18
+    VOICE_FIXED_PLANE_CONTROL = 19
+
+class ErrorCode(IntEnum):
+    # General Errors
+    UNKNOWN_ERROR = 0
+    INVALID_COMMAND = 1
+    SYSTEM_INITIALIZATION_FAILED = 2
+
+    # Communication Errors
+    UI_COMMUNICATION_ERROR = 3
+    DOOR_COMMUNICATION_ERROR = 4
+    NC_COMMUNICATION_ERROR = 5
+
+    # Hardware Errors
+    SENSOR_FAILURE = 6
+    MOTOR_FAILURE = 7
+
+    # Software Errors
+    FSM_CRASH = 8
+    OPERATION_TIMEOUT = 9
+    INVALID_RESPONSE = 10
+
+    # Safety Errors
+    SAFETY_TRIGGERED = 11
+    EMERGENCY_STOP = 12
+
+
+class ViolationCode(IntEnum):
+    NONE = 0
+    NOT_READY = 1
+    VIOLATION = 2
+    COLLISION = 3
+    RECOVERING = 4
+    BRAKE_CONTROL = 5
+    NC = 6
+
+class RobotState(IntEnum):
+    OP_SYSTEM_OFF = 0
+    OP_SYSTEM_ON = 1
+    OP_VIOLATE = 2
+    OP_RECOVER_HARD = 3
+    OP_RECOVER_SOFT = 4
+    OP_IDLE = 5
+    OP_MOVING = 6
+    OP_TEACHING = 7
+    OP_COLLISION = 8
+    OP_STOP_AND_OFF = 9
+    OP_COMPLIANCE = 10
+    OP_BRAKE_CONTROL = 11
+    OP_SYSTEM_RESET = 12
+    OP_SYSTEM_SWITCH = 13
+    OP_VIOLATE_HARD = 15
+    OP_MANUAL_RECOVER = 16
+    TELE_OP = 17
+
+
+class ProgramState(IntEnum):
+    PROG_IDLE = 0
+    PROG_RUNNING = 1
+    PROG_PAUSING = 2
+    PROG_STOPPING = 3
+
+
+class ProgramControl(IntEnum):
+    PROG_IDLE = 0
+    PROG_START = 1
+    PROG_RESUME = 2
+    PROG_PAUSE = 3
+    PROG_STOP = 4
+
+
+class DigitalState(IntEnum):
+    OFF = 2
+    ON = -2
+    # UNUSED = 2
+
+class EndtoolState(IntEnum):
+    UNUSED = 0
+    HIGH_PNP = 2
+    HIGH_NPN = 1
+    LOW_NPN = -1
+    LOW_PNP = -2
+
+
+

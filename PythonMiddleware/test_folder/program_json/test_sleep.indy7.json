@@ -1,0 +1,94 @@
+{
+  "Name"   : "dump",
+  "Program": [
+    {
+      "cmd"     : "CollisionConfig",
+      "policy"  : "PAUSE",
+      "duration": 0
+    },
+    {
+      "cmd"       : "VariableConfig",
+      "local_list": []
+    },
+    {
+      "cmd"              : "MoveJ",
+      "name"             : "hhh",
+      "wait_finish"      : true,
+      "base_type"        : "ABSOLUTE",
+      "interpolator_type": "VELOCITY",
+      "vel_ratio"        : 25,
+      "acc_ratio"        : 100,
+      "coll_sens_level"  : 3,
+      "blending"         : {
+        "type": "NONE"
+      },
+      "waypoint_time"    : [
+        2
+      ],
+      "waypoint_active"  : [
+        true
+      ],
+      "waypoints"        : [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "active"           : true,
+      "fold"             : false
+    },
+    {
+      "cmd"    : "Annotation",
+      "content": "aaa",
+      "active" : true
+    },
+    {
+      "cmd"              : "MoveJ",
+      "name"             : "hhh",
+      "wait_finish"      : false,
+      "base_type"        : "ABSOLUTE",
+      "interpolator_type": "VELOCITY",
+      "vel_ratio"        : 25,
+      "acc_ratio"        : 100,
+      "coll_sens_level"  : 3,
+      "blending"         : {
+        "type": "NONE"
+      },
+      "waypoint_time"    : [
+        2
+      ],
+      "waypoint_active"  : [
+        true
+      ],
+      "waypoints"        : [
+        [
+          35.93,
+          29.5,
+          -99.15,
+          1.3,
+          -112.67,
+          38.58
+        ]
+      ],
+      "active"           : true,
+      "fold"             : false
+    },
+    {
+      "cmd"        : "Sleep",
+      "condition"  : {
+        "type": "ACCELERATION"
+      },
+      "async_sleep": false,
+      "active"     : true
+    },
+    {
+      "cmd"    : "Annotation",
+      "content": "bbb",
+      "active" : true
+    }
+  ]
+}

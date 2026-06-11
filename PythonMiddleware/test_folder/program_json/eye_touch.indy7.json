@@ -1,0 +1,165 @@
+{
+  "Name"   : "eye_touch",
+  "Program": [
+    {
+      "cmd"     : "CollisionConfig",
+      "policy"  : "PAUSE",
+      "duration": 0
+    },
+    {
+      "cmd"        : "VisionConfig",
+      "vision_list": [
+        {
+          "server_name": "eye31",
+          "server_type": "INDYEYE",
+          "ip"         : "192.168.1.26",
+          "port"       : 10511
+        }
+      ]
+    },
+    {
+      "cmd"       : "VariableConfig",
+      "local_list": []
+    },
+    {
+      "cmd"      : "MoveHome",
+      "vel_ratio": 25,
+      "acc_ratio": 100,
+      "active"   : true
+    },
+    {
+      "cmd"     : "Loop",
+      "count"   : -1,
+      "active"  : true,
+      "fold"    : false,
+      "children": [
+        {
+          "cmd"              : "MoveJ",
+          "name"             : "cam",
+          "wait_finish"      : true,
+          "base_type"        : "ABSOLUTE",
+          "interpolator_type": "VELOCITY",
+          "vel_ratio"        : 25,
+          "acc_ratio"        : 100,
+          "coll_sens_level"  : 3,
+          "blending"         : {
+            "type": "NONE"
+          },
+          "shift"            : [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "shift_base"       : "RELATIVE",
+          "offsets"          : [
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "waypoint_time"    : [
+            2
+          ],
+          "waypoint_active"  : [
+            true
+          ],
+          "waypoints"        : [
+            "campoint"
+          ],
+          "active"           : true,
+          "fold"             : false
+        },
+        {
+          "cmd"          : "Detect",
+          "detect_name"  : "circle",
+          "vision_target": {
+            "vision_server": "eye31",
+            "target_object": "circle"
+          },
+          "detect_type"  : "DETECT",
+          "active"       : true
+        },
+        {
+          "cmd"         : "SetFrame",
+          "tool_frame"  : "cam_tool",
+          "ref_frame"   : "vision_frame",
+          "vision_frame": "circle",
+          "active"      : true,
+          "fold"        : false,
+          "children"    : [
+            {
+              "cmd"              : "MoveL",
+              "name"             : "touch",
+              "wait_finish"      : true,
+              "base_type"        : "ABSOLUTE",
+              "interpolator_type": "VELOCITY",
+              "vel_ratio"        : 25,
+              "acc_ratio"        : 100,
+              "coll_sens_level"  : 3,
+              "blending"         : {
+                "type": "NONE"
+              },
+              "shift"            : [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "shift_base"       : "RELATIVE",
+              "offsets"          : [
+                [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              ],
+              "offset_bases"     : [
+                "RELATIVE"
+              ],
+              "waypoint_time"    : [
+                2
+              ],
+              "waypoint_active"  : [
+                true
+              ],
+              "waypoints"        : [
+                [
+                  0.09,
+                  0.04,
+                  -0.07,
+                  -179.98,
+                  -179.97,
+                  180
+                ]
+              ],
+              "waypoints_joint"  : [
+                [
+                  4.7,
+                  -50.82,
+                  -77.77,
+                  -1.76,
+                  -51.47,
+                  50.56
+                ]
+              ],
+              "active"           : true,
+              "fold"             : false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "pages": {
+    "status": true,
+    "position_control": true,
+    "mode_control": true,
+    "voice_control": true,
+    "telemetry": true,
+    "power_control": false,
+    "motion": false,
+    "alarms": true
+  }
+}

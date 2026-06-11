@@ -1,0 +1,117 @@
+{
+  "Name"   : "test_program",
+  "Program": [
+    {
+      "cmd"     : "CollisionConfig",
+      "policy"  : "PAUSE_DURATION",
+      "duration": 3.5
+    },
+    {
+      "cmd"       : "VariableConfig",
+      "local_list": [
+        ["INT", "iVar1", 101],
+        ["INT", "iVar2", 102],
+        ["FLOAT", "fVar1", 1],
+        ["FLOAT", "fVar2", 2],
+        ["FLOAT", "fVar3", 3],
+        ["BOOL", "bVar", 50],
+        ["JPOS", "jVar", 250],
+        ["TPOS", "tVar", 370],
+        ["INT", "iVar2", 101]
+      ]
+    },
+    {
+      "cmd"       : "SetVar",
+      "active"    : true,
+      "expression": "iVar1 := 2; fVar1 := 6.0; fVar3 := iVar1 + fVar1;"
+    },
+    {
+      "cmd"       : "SetVar",
+      "active"    : true,
+      "expression": [
+        "iVar2 := 4",
+        "fVar2 := 10.0",
+        "bVar := true",
+        "var temp[6] := {1,2,3,4,5,6}; jVar := temp;"
+      ]
+    },
+    {
+      "cmd"     : "Loop",
+      "count"   : 2,
+      "active"  : true,
+      "fold"    : false,
+      "children": [
+        {
+          "cmd"      : "If",
+          "condition": {
+            "type"      : "Expression",
+            "expression": "(fVar3 > fVar1) or (dinBoard[1] == 1) or (dinEndtool[0] == 1)"
+          },
+          "active"   : true,
+          "fold"     : false,
+          "children" : [
+            {
+              "cmd"   : "Simple",
+              "name"  : "test_if_1",
+              "active": true
+            },
+            {
+              "cmd"              : "MoveJ",
+              "name"             : "move_home",
+              "wait_finish"      : false,
+              "base_type"        : "ABSOLUTE",
+              "interpolator_type": "VELOCITY",
+              "vel_ratio"        : 25,
+              "acc_ratio"        : 100,
+              "coll_sens_level"  : 3,
+              "blending"         : {
+                "type"     : "NONE",
+                "condition": {
+                  "type"    : "RADIUS",
+                  "radius"  : 10.0,
+                  "time"    : 10.0,
+                  "progress": 10.0
+                }
+              },
+              "waypoint_time"    : [
+                2.00
+              ],
+              "waypoint_active"  : [
+                true
+              ],
+              "waypoints"        : [
+                [0.0, 0.0, -90.0, 0.0, -90.0, 0.0]
+              ],
+              "active"           : true,
+              "fold"             : false
+            },
+            {
+              "cmd"     : "Sleep",
+              "duration": 2.0,
+              "active"  : true
+            },
+            {
+              "cmd"    : "Annotation",
+              "content": "Annotation!",
+              "active" : true
+            },
+            {
+              "cmd"    : "Alarm",
+              "content": "Warning! Warning!",
+              "active" : true
+            },
+            {
+              "cmd"   : "QuitProgram",
+              "active": false
+            },
+            {
+              "cmd"   : "Simple",
+              "name"  : "test_if_2",
+              "active": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

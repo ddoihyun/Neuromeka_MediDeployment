@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1024, height=768, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>{{ title if title else 'NUMA UI' }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="page {{ active_page }}">
+<div class="app-frame">
+    <header class="top-bar">
+        <div class="brand">Neuromeka</div>
+        <div class="top-bar-status-group">
+            <div class="top-bar-strategy" aria-label="현재 Strategy">
+                <span class="top-bar-status-label">Strategy</span>
+                <span
+                    class="top-bar-strategy-value color-{{ app_state.system.operating_mode_color }}"
+                    data-state-text="system.operating_mode"
+                    data-state-color="system.operating_mode_color"
+                >
+                    {{ app_state.system.operating_mode }}
+                </span>
+            </div>
+            <div class="top-bar-status" aria-label="로봇 연결 상태">
+                <span class="top-bar-status-label">로봇 연결</span>
+                <span
+                    class="connection-dot color-{{ app_state.system.metrics.motor_color }}"
+                    data-state-color="system.metrics.motor_color"
+                    data-state-aria-label="system.metrics.motor"
+                    data-state-title="system.metrics.motor"
+                    role="status"
+                    aria-label="{{ app_state.system.metrics.motor }}"
+                    title="{{ app_state.system.metrics.motor }}"
+                ></span>
+            </div>
+        </div>
+        <!-- <div
+            class="sync-indicator"
+            x-data
+            x-bind:class="{ 'is-online': $store.appState && $store.appState.isSystemOnline, 'is-offline': !$store.appState || !$store.appState.isSystemOnline }"
+        >
+            <span class="sync-label" x-text="$store.appState && $store.appState.isSystemOnline ? '연결됨' : '대기 중'">연결 상태</span>
+            <small
+                class="sync-updated"
+                x-text="$store.appState && $store.appState.lastSystemUpdate ? '업데이트: ' + $store.appState.lastSystemUpdate : '업데이트 대기'"
+            >
+                업데이트 대기
+            </small>
+        </div> -->
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <ul>
+                {% for page in menu_pages %}
+                <li class="nav-item {{ 'active' if active_page == page.id else '' }}">
+                    <a href="{{ url_for(page.endpoint) }}">{{ page.label }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </aside>
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+<script>
+    window.__INITIAL_STATE__ = {{ app_state | tojson | safe }};
+    window.__BACKEND_BASE_URL__ = {{ backend_base_url | tojson | safe }};
+</script>
+<script defer src="{{ url_for('static', filename='js/ui.js') }}"></script>
+</body>
+</html>

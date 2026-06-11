@@ -1,0 +1,19 @@
+[Unit]
+Description=Front Service
+
+[Service]
+# User는 설치 스크립트를 실행하는 사용자로 자동 설정됩니다.
+User=user
+
+WorkingDirectory=/home/user/dev/Release/MediDeployment
+ExecStart=/bin/bash /home/user/dev/Release/MediDeployment/Service/run_front_wrapper.sh
+
+Restart=always
+RestartSec=5s
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

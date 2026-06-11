@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card system-info" data-cb-control-sync>
+    <h2>모션</h2>
+    <div class="button-row">
+        <button
+            class="btn primary"
+            type="button"
+            data-state-trigger-hold="cb_control.motion_start"
+            >시작</button>
+        <button
+            class="btn danger"
+            type="button"
+            data-state-trigger-hold="cb_control.motion_stop"
+            >종료</button>
+    </div>
+</section>
+{% endblock %}

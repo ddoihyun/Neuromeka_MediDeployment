@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="status-page">
+    <div class="status-overview">
+        <article class="card status-summary">
+            <header>
+                <h2>로봇 상태 모니터링</h2>
+                <!-- <p class="status-timestamp">
+                    마지막 업데이트 ·
+                    <time data-state-time="system.last_updated">{{ app_state.system.last_updated }}</time>
+                </p> -->
+            </header>
+            <div class="status-summary-body">
+                <div class="status-summary-info">
+                    <div
+                        class="status-indicator color-{{ app_state.system.status_color }}"
+                        data-state-text="system.status"
+                        data-state-color="system.status_color"
+                    >
+                        {{ app_state.system.status }}
+                    </div>
+                    <dl class="status-details">
+                        <div>
+                            <dt>운영 모드</dt>
+                            <dd class="status-value-group">
+                                <span
+                                    class="status-pill-value color-{{ app_state.system.operating_mode_color }}"
+                                    data-state-text="system.operating_mode"
+                                    data-state-color="system.operating_mode_color"
+                                >
+                                    {{ app_state.system.operating_mode }}
+                                </span>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>로봇 연결</dt>
+                            <dd class="status-value-group">
+                                <span
+                                    class="connection-dot status-value-dot color-{{ app_state.system.metrics.motor_color }}"
+                                    data-state-color="system.metrics.motor_color"
+                                    data-state-aria-label="system.metrics.motor"
+                                    data-state-title="system.metrics.motor"
+                                    role="status"
+                                    aria-label="{{ app_state.system.metrics.motor }}"
+                                    title="{{ app_state.system.metrics.motor }}"
+                                ></span>
+                                <span
+                                    class="status-text-value color-{{ app_state.system.metrics.motor_color }}"
+                                    data-state-text="system.metrics.motor"
+                                    data-state-color="system.metrics.motor_color"
+                                >
+                                    {{ app_state.system.metrics.motor }}
+                                </span>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>컨트롤러 연결</dt>
+                            <dd class="status-value-group">
+                                <span
+                                    class="connection-dot status-value-dot color-{{ app_state.system.metrics.network_color }}"
+                                    data-state-color="system.metrics.network_color"
+                                    data-state-aria-label="system.metrics.network"
+                                    data-state-title="system.metrics.network"
+                                    role="status"
+                                    aria-label="{{ app_state.system.metrics.network }}"
+                                    title="{{ app_state.system.metrics.network }}"
+                                ></span>
+                                <span
+                                    class="status-text-value color-{{ app_state.system.metrics.network_color }}"
+                                    data-state-text="system.metrics.network"
+                                    data-state-color="system.metrics.network_color"
+                                >
+                                    {{ app_state.system.metrics.network }}
+                                </span>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>시스템 버전</dt>
+                            <dd class="status-value-group">
+                                <span
+                                    class="status-text-value color-{{ app_state.system.version_color }}"
+                                    data-state-text="system.version"
+                                    data-state-color="system.version_color"
+                                >
+                                    {{ app_state.system.version }}
+                                </span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="status-actions">
+                    <h2>상태 조치</h2>
+                    <p class="status-actions-description">
+                        비정상 상태 감지 시 아래 버튼을 2초 이상 길게 눌러 로봇 상태를 업데이트하세요.
+                    </p>
+                    <button
+                        type="button"
+                        class="btn hold-trigger status-update-btn"
+                        data-state-trigger-hold="system.update"
+                        data-hold-duration="2000"
+                    >
+                        상태 업데이트
+                    </button>
+                    <p class="hold-hint">길게 누르는 동안 색상이 변합니다.</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- <article class="card status-errors" data-open-alarms role="button" tabindex="0" aria-label="알림 및 에러 전체 기록 보기">
+            <header>
+                <h2>알림 및 에러 기록</h2>
+                <p class="hint">가장 최근 알림을 표시합니다. 전체 기록을 보려면 클릭하세요.</p>
+            </header>
+            <div class="error-table-wrapper">
+                <table class="error-table" role="grid">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="column-time">시간</th>
+                            <th scope="col" class="column-type">종류</th>
+                            <th scope="col" class="column-content">내용</th>
+                            <th scope="col" class="column-action">조치</th>
+                        </tr>
+                    </thead>
+                    <tbody data-alarm-log="system.alarms" data-alarm-view="latest">
+                        <tr>
+                            <td colspan="4" class="placeholder">이벤트를 불러오는 중…</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article> -->
+    </div>
+</section>
+{% endblock %}

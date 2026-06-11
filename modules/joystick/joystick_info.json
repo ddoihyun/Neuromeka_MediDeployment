@@ -1,0 +1,88 @@
+{
+  "actions": {
+    "zoom_out": null,
+    "zoom_in": null,
+    "emergency": null,
+    "enable": null,
+    "rotate_cw": null,
+    "rotate_ccw": null,
+    "tilt_left": null,
+    "tilt_right": null,
+    "tilt_up": null,
+    "tilt_down": null
+  },
+  "supported_names": [
+    "Generic X-Box pad",
+    "Controller (Xbox One For Windows)",
+    "Microsoft Xbox Adaptive Joystick"
+  ],
+  "controllers": {
+    "Generic X-Box pad": {
+      "buttons": {
+        "x1": 2,
+        "x2": 3,
+        "x3": 0,
+        "x4": 1,
+        "x5": 4
+      },
+      "axes": {
+        "up_down": 1,
+        "left_right": 0
+      }
+    },
+    "Controller (Xbox One For Windows)": {
+      "buttons": {
+        "x1": 2,
+        "x2": 3,
+        "x3": 0,
+        "x4": 1,
+        "x5": 4
+      },
+      "axes": {
+        "up_down": 1,
+        "left_right": 0
+      }
+    },
+    "Microsoft Xbox Adaptive Joystick": {
+      "buttons": {
+        "x1": 4,
+        "x2": 5,
+        "x3": 2,
+        "x4": 3,
+        "x5": 1
+      },
+      "axes": {
+        "up_down": 1,
+        "left_right": 0
+      }
+    }
+  },
+  "input": {
+    "deadzone": 0.2,
+    "axis_gain": 1.0,
+    "round_digit": 2,
+    "poll_interval_sec": 1.0
+  },
+  "teleop": {
+    "axis_deadzone": 0.1,
+    "gain": {
+      "zoom": 1,
+      "tilt_w": 1,
+      "tilt_uv": 1
+    },
+    "limit": {
+      "zoom": 100,
+      "tilt_w": 30,
+      "tilt_u": 15,
+      "tilt_v": 15
+    },
+    "singularity_slowdown": {
+      "sigma_stop": 0.01,
+      "sigma_slow": 0.12,
+      "condition_slow": 40.0,
+      "condition_stop": 150.0,
+      "min_scale": 0.2,
+      "min_command": 1e-9
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "use_voice": true,
+  "use_joystick": true,
+  "use_button": false,
+  "mimic_conty": false,
+  "use_teleop_singularity_slowdown": true,
+  "check_home": false,
+  "save_control_trace_log": true
+}

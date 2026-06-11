@@ -1,0 +1,176 @@
+{
+  "Program": [
+    {
+      "cmd"     : "CollisionConfig",
+      "policy"  : "PAUSE_DURATION",
+      "duration": 3.5
+    },
+    {
+      "cmd"      : "If",
+      "condition": {
+        "type"    : "Compound",
+        "operator": "AND",
+        "children": [
+          {
+            "type"    : "Compound",
+            "operator": "OR",
+            "children": [
+              {
+                "type"    : "DigitalIO",
+                "io_board": [
+                  {"di": 0, "value": 1}, {"di": 2, "value": 0}
+                ],
+                "end_tool": [{"di": 1, "value": 0}]
+              },
+              {
+                "type"    : "DigitalIO",
+                "end_tool": [{"di": 0, "value": 1}]
+              }
+            ]
+          },
+          {
+            "type" : "Constant",
+            "value": true
+          }
+        ]
+      },
+      "active"   : true,
+      "fold"     : false,
+      "children" : [
+        {
+          "cmd"   : "Simple",
+          "name"  : "test_if",
+          "active": true
+        }
+      ]
+    },
+    {
+      "cmd"     : "Loop",
+      "count"   : 2,
+      "active"  : true,
+      "fold"    : false,
+      "children": [
+        {
+          "cmd"     : "Group",
+          "name"    : "group_joints",
+          "active"  : true,
+          "fold"    : false,
+          "children": [
+            {
+              "cmd"              : "MoveJ",
+              "name"             : "move_home",
+              "wait_finish"      : true,
+              "base_type"        : "ABSOLUTE",
+              "interpolator_type": "VELOCITY",
+              "vel_ratio"        : 25,
+              "acc_ratio"        : 100,
+              "coll_sens_level"  : 3,
+              "blending"         : {
+                "type"     : "NONE",
+                "condition": {
+                  "type"    : "RADIUS",
+                  "radius"  : 10.0,
+                  "time"    : 10.0,
+                  "progress": 10.0
+                }
+              },
+              "waypoint_time"    : [
+                2.00
+              ],
+              "waypoint_active"  : [
+                true
+              ],
+              "waypoints"        : [
+                [0.0, 0.0, -90.0, 0.0, -90.0, 0.0]
+              ],
+              "active"           : true,
+              "fold"             : false
+            }
+          ]
+        },
+        {
+          "cmd"     : "Group",
+          "name"    : "group_tasks",
+          "active"  : false,
+          "fold"    : false,
+          "children": [
+            {
+              "cmd"              : "MoveL",
+              "name"             : "move_line",
+              "vel_ratio"        : 25,
+              "acc_ratio"        : 100,
+              "interpolator_type": "VELOCITY",
+              "base_type"        : "ABSOLUTE",
+              "wait_finish"      : true,
+              "coll_sens_level"  : 3,
+              "blending"         : {
+                "type"     : "OVERRIDE",
+                "condition": {
+                  "type"      : "RADIUS",
+                  "radius"    : 10.0,
+                  "time"      : 10.0,
+                  "progress"  : 10.0,
+                  "expression": ""
+                }
+              },
+              "waypoint_time"    : [
+                2.00
+              ],
+              "waypoint_active"  : [
+                true
+              ],
+              "waypoints"        : [
+                [
+                  541.61, -229.02, 420.29, -180.00, 0.00, 180.00
+                ]
+              ],
+              "waypoints_joint"  : [
+                [
+                  0.00, -8.51, -117.40, 0.00, -54.09, 0.00
+                ]
+              ],
+              "active"           : true,
+              "fold"             : false
+            }
+          ]
+        },
+        {
+          "cmd"               : "MoveC",
+          "name"              : "move_circle",
+          "vel_ratio"         : 25,
+          "acc_ratio"         : 100,
+          "interpolator_type" : "VELOCITY",
+          "base_type"         : "TCP",
+          "wait_finish"       : true,
+          "coll_sens_level"   : 3,
+          "blending"          : {
+            "type"     : "NONE",
+            "condition": {
+              "type"      : "RADIUS",
+              "radius"    : 10.0,
+              "time"      : 10.0,
+              "progress"  : 10.0,
+              "expression": ""
+            }
+          },
+          "setting_type"      : "POINT_SET",
+          "circular_move_type": "CONSTANT",
+          "travel_angle"      : 360,
+          "waypoint_time"     : [
+            2.00, 2.00
+          ],
+          "waypoints"         : [
+            [0.0, 50.0, 0.0, 0.0, 0.0, 0.0],
+            [-50.0, 0.0, -50.0, 0.0, 0.0, 0.0]
+          ],
+          "waypoints_joint"   : [
+            [0, 0.01, -90, 0, -90.01, 0],
+            [27.51, 6.73, -96.24, -0.07, -90.51, 28.62]
+          ],
+          "active"            : true,
+          "fold"              : false
+        }
+      ]
+    }
+  ]
+}

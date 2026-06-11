@@ -1,0 +1,40 @@
+{
+  "cm": {
+    "class": "cmd.CommandManager",
+    "program_name": "move_c"
+  },
+  "cm.program": [
+    {
+      "cmd": "cmd.Program",
+      "collision_config": {
+        "class": "CollisionConfig",
+        "policy": "CollisionPolicyType.PAUSE",
+        "sleep_time": 0
+      }
+    },
+    {
+      "cmd": "cmd.Variable",
+      "variable_list": []
+    },
+    {
+      "cmd": "SetTool",
+      "name": "test_tool",
+      "active": true,
+      "expression": [
+        "iVar2 := 7",
+        "fVar2 := 15.0"
+      ],
+      "do_signals": [{"address": 1, "state": 1}, {"address": 3, "state": 1}, {"address": 4, "state": 0}],
+      "ao_signals": [{"address": 1, "voltage": 25}],
+      "enddo_signals": [
+        {"port": "C", "states": [1]},
+        {"port": "B", "states": [-1, -1]}
+      ],
+      "endao_signals": [
+        {"port": "C", "voltage": [10, 20]},
+        {"port": "B", "voltage": [10, 20]}
+      ],
+      "execute_time": 1.0
+    }
+  ]
+}

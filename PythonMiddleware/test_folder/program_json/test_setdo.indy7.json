@@ -1,0 +1,31 @@
+{
+  "Name"   : "dump",
+  "Program": [
+    {
+      "cmd"     : "CollisionConfig",
+      "policy"  : "PAUSE",
+      "duration": 0
+    },
+    {
+      "cmd"       : "VariableConfig",
+      "local_list": []
+    },
+    {
+      "cmd"    : "SetSignals",
+      "io_board": [
+        {"do": 0, "value": 0}, {"do": 2, "value": 0},
+        {"ao": 1, "value": 100}, {"ao": 2, "value": 50}
+      ],
+      "end_tool": [
+        {"do": 0, "value": 0}, {"do": 2, "value": 0}
+      ],
+      "expression": "doutBoard[0] := 1; doutBoard[2] := 1; ",
+      "active" : true
+    },
+    {
+      "cmd"    : "SetDO",
+      "expression": "doutBoard[0] := 1; doutBoard[2] := 1; ",
+      "active" : true
+    }
+  ]
+}

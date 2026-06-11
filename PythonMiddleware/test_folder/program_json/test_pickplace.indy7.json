@@ -1,0 +1,70 @@
+{
+  "Program": [
+    {
+      "cmd"     : "CollisionConfig",
+      "policy"  : "PAUSE_DURATION",
+      "duration": 3.5
+    },
+    {
+      "cmd"       : "VariableConfig",
+      "local_list": [
+        ["INT", "iVar1", 101],
+        ["INT", "iVar2", 102],
+        ["FLOAT", "fVar1", 1],
+        ["FLOAT", "fVar2", 2],
+        ["FLOAT", "fVar3", 3],
+        ["BOOL", "bVar", 50],
+        ["JPOS", "jVar", 250],
+        ["TPOS", "tVar", 370],
+        ["INT", "iVar2", 101]
+      ]
+    },
+    {
+      "cmd"       : "SetVar",
+      "active"    : true,
+      "expression": [
+        "iVar2 := 4",
+        "fVar2 := 10.0",
+        "bVar := true",
+        "var temp[6] := {1,2,3,4,5,6}; jVar := temp;"
+      ]
+    },
+    {
+      "cmd"       : "SetTool",
+      "name"      : "test_tool",
+      "active"    : true,
+      "sleep_time": 1.0,
+      "expression": [
+        "iVar2 := 7",
+        "fVar2 := 15.0"
+      ],
+      "io_board"  : [
+        {"do": 1, "value": 1}, {"do": 3, "value": 1}, {"do": 4, "value": 0}
+      ],
+      "end_tool"  : [{"do": 1, "value": 0}]
+    },
+    {
+      "cmd"                 : "PickPlace",
+      "name"                : "TestPick",
+      "active"              : true,
+      "tool_name"           : "gripper_grasp",
+      "work_type"           : "PICK",
+      "payload"             : 0.0,
+      "approach_pos"        : [0.0, 0.0, -10.0, 0.0, 0.0, 0.0],
+      "tar_pos"             : [350.0, -186.5, 522.0, 0.0, 180.0, 0.0],
+      "retract_pos"         : [0.0, 0.0, -10.0, 0.0, 0.0, 0.0],
+      "approach_condition"  : {
+        "type" : "Constant",
+        "value": true
+      },
+      "approach_check_cycle": 1.0,
+      "approach_wait_time"  : 1.0,
+      "retract_condition"   : {
+        "type" : "Constant",
+        "value": true
+      },
+      "retract_check_cycle" : 1.0,
+      "retract_wait_time"   : 1.0
+    }
+  ]
+}

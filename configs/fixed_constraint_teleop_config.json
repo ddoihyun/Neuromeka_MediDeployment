@@ -1,0 +1,239 @@
+{
+  "mode_profiles": {
+    "fixed_point": {
+      "gain": 0.03,
+      "velocity_limit_deg_s": 12.0,
+      "cumulative_limit_deg": 20.0,
+      "filter_time_constant_sec": 0.04
+    },
+    "fixed_line": {
+      "gain": 1.0,
+      "velocity_limit_mm_s": 55.0,
+      "cumulative_limit_mm": 70.0,
+      "filter_time_constant_sec": 0.035
+    },
+    "fixed_plane": {
+      "gain": 1.35,
+      "velocity_limit_mm_s": 85.0,
+      "cumulative_limit_mm": 85.0,
+      "filter_time_constant_sec": 0.04
+    }
+  },
+  "filter": {
+    "reset_on_sign_change": true
+  },
+  "min_command": 1e-06,
+  "jacobian_rcond": 0.0001,
+  "jacobian_eps_rad": 1e-05,
+  "mdh": {
+    "a_m": [
+      0.0,
+      0.0,
+      0.4031,
+      -0.05,
+      0.0,
+      0.0
+    ],
+    "alpha_rad": [
+      0.0,
+      1.5707963267948966,
+      0.0,
+      1.5707963267948966,
+      1.5707963267948966,
+      1.5707963267948966
+    ],
+    "d_m": [
+      0.328,
+      0.0,
+      0.0,
+      0.4,
+      0.136,
+      0.1035
+    ],
+    "theta0_rad": [
+      3.141592653589793,
+      1.6952,
+      1.4464,
+      3.141592653589793,
+      3.141592653589793,
+      0.0
+    ]
+  },
+  "tau_deadzone": [
+    0.02,
+    0.02,
+    0.02,
+    0.01,
+    0.01,
+    0.01
+  ],
+  "tau_bias": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "task_wrench_sign": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "timing": {
+    "default_loop_dt_sec": 0.1,
+    "min_loop_dt_sec": 0.001,
+    "max_loop_dt_sec": 0.1
+  },
+  "singularity_slowdown": {
+    "sigma_stop": 0.015,
+    "sigma_slow": 0.08,
+    "condition_slow": 60.0,
+    "condition_stop": 180.0,
+    "min_scale": 0.45
+  },
+  "clip": {
+    "soft_limit": true,
+    "cumulative": [
+      15.0,
+      15.0,
+      100.0,
+      12.0,
+      12.0,
+      5.0
+    ]
+  },
+  "modes": {
+    "fixed_point": {
+      "axis_mask": [
+        0,
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      "constraint": {
+        "type": "rcm_point",
+        "reference_source": "entry_pose",
+        "tool_axis_frame": "tcp",
+        "tool_axis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "restore": {
+        "enabled": true,
+        "shadow_mode": false,
+        "kp": [
+          0.8,
+          0.8,
+          0.8
+        ],
+        "kd": [
+          0.03,
+          0.03,
+          0.03
+        ],
+        "deadband_mm": 0.5,
+        "max_velocity_mm_s": 15.0,
+        "command_velocity_limit_mm_s": 8.0,
+        "command_cumulative_limit_mm": 12.0,
+        "max_error_mm": 50.0,
+        "blend_time_constant_sec": 0.1
+      },
+      "rotation_input": {
+        "enabled": true,
+        "source": "joint_admittance"
+      }
+    },
+    "fixed_line": {
+      "axis_mask": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "constraint": {
+        "type": "line",
+        "reference_source": "entry_pose",
+        "axis_frame": "tcp",
+        "line_axis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "restore": {
+        "enabled": true,
+        "shadow_mode": false,
+        "kp": [
+          0.6,
+          0.6,
+          0.6
+        ],
+        "kd": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "deadband_mm": 0.5,
+        "max_velocity_mm_s": 20.0,
+        "max_error_mm": 60.0,
+        "blend_time_constant_sec": 0.08
+      },
+      "force_to_line": {
+        "enabled": true,
+        "force_direction": [
+          0.30734449954312976,
+          0.15367224977156488,
+          0.9391081930484522
+        ]
+      }
+    },
+    "fixed_plane": {
+      "axis_mask": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "constraint": {
+        "type": "plane",
+        "reference_source": "entry_pose",
+        "normal_frame": "tcp",
+        "plane_normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "restore": {
+        "enabled": true,
+        "shadow_mode": false,
+        "kp": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "kd": [
+          0.02,
+          0.02,
+          0.02
+        ],
+        "deadband_mm": 0.5,
+        "max_velocity_mm_s": 20.0,
+        "max_error_mm": 60.0,
+        "blend_time_constant_sec": 0.08
+      }
+    }
+  }
+}

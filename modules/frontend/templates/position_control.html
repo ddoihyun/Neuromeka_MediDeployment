@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+{% set position_state = app_state.position_control %}
+<section class="card manual-card">
+    <h2>위치 제어</h2>
+    <div class="manual-layout">
+        <div class="manual-column manual-position">
+            <fieldset class="position-selector">
+                <legend>위치 선택</legend>
+                {% for position in position_state.available_positions %}
+                <label>
+                    <input
+                        type="radio"
+                        name="position-control"
+                        value="{{ position.id }}"
+                        {% if position_state.target_position == position.id %}checked{% endif %}
+                        data-state-radio="position_control.target_position"
+                        data-position-index="{{ loop.index0 }}"
+                    >
+                    {{ position.label }}
+                </label>
+                {% endfor %}
+            </fieldset>
+        </div>
+        <div class="manual-column manual-motion">
+            <div class="manual-controls manual-hold-controls">
+                <button
+                    class="btn hold-trigger"
+                    type="button"
+                    data-hold-button
+                    data-hold-activate="position_control.is_moving"
+                    data-hold-deactivate="position_control.is_moving"
+                    data-hold-touch="position_control.last_moved_at"
+                >누르는 동안 이동</button>
+                <p class="hold-hint" data-state-text="position_control.motion_hint">
+                    {{ '버튼을 누르고 있는 동안 선택한 위치로 이동합니다.' }}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="telemetry-page">
+    <header class="telemetry-header">
+        <div>
+            <p class="eyebrow">주기 0.1초 라이브</p>
+            <h1>로봇 데이터 모니터링</h1>
+        </div>
+        <div class="telemetry-meta">
+            <dl>
+                <div>
+                    <dt>백엔드 엔드포인트</dt>
+                    <dd>{{ backend_base_url }}/api/robot/telemetry</dd>
+                </div>
+                <div>
+                    <dt>마지막 수신</dt>
+                    <dd data-telemetry-timestamp>대기 중…</dd>
+                </div>
+            </dl>
+        </div>
+    </header>
+
+    <div class="telemetry-layout">
+        <div class="telemetry-card orientation-card">
+            <header class="card-header">
+                <div>
+                    <p class="eyebrow">엔드툴 위치</p>
+                    <h2>p(px, py, pz, u, v, w)</h2>
+                </div>
+            </header>
+            <div class="orientation-body">
+                <div class="pose-values">
+                    <dl class="pose-row">
+                        <div><dt>px</dt><dd data-telemetry-p="px">0</dd></div>
+                        <div><dt>py</dt><dd data-telemetry-p="py">0</dd></div>
+                        <div><dt>pz</dt><dd data-telemetry-p="pz">0</dd></div>
+                    </dl>
+                    <dl class="pose-row">
+                        <div><dt>u</dt><dd data-telemetry-p="u">0</dd></div>
+                        <div><dt>v</dt><dd data-telemetry-p="v">0</dd></div>
+                        <div><dt>w</dt><dd data-telemetry-p="w">0</dd></div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="telemetry-card tau-card">
+            <header class="card-header tau-header">
+                <div>
+                    <p class="eyebrow">외력 토크</p>
+                    <h2>tau_ext</h2>
+                </div>
+                <p class="tau-scale">스케일 +/- <span data-tau-scale>5.000</span></p>
+            </header>
+            <div class="tau-chart" aria-label="tau_ext joint torque chart">
+                {% for joint in range(1, 7) %}
+                <div class="tau-row" data-tau-row="{{ loop.index0 }}">
+                    <span class="tau-label">J{{ joint }}</span>
+                    <div class="tau-track" aria-hidden="true">
+                        <span class="tau-zero"></span>
+                        <span class="tau-bar" data-tau-bar="{{ loop.index0 }}"></span>
+                    </div>
+                    <span class="tau-value" data-telemetry-tau-ext="{{ loop.index0 }}">0.000</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script defer src="{{ url_for('static', filename='js/telemetry.js') }}"></script>
+{% endblock %}
